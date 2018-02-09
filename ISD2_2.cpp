@@ -11,6 +11,7 @@
 void sig_handler(int signo);
 void get_input(void);
 
+
 int main(int argc, char* argv[]) {
 	process_id = fork(); // Create child process
 
@@ -60,8 +61,6 @@ int main(int argc, char* argv[]) {
         listen(listen_fd, 10);
 	//listening to the specified ip and port and have a waiting list of 10
 	comm_fd = accept(listen_fd, (struct sockaddr*) NULL, NULL);
-
-        
         
 	while (1) {
 		//Dont block context switches, let the process sleep for some time

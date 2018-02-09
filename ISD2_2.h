@@ -11,10 +11,10 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <pthread.h>
 
 using namespace std;
 
-float get_temp(void);
 
 char str[100];
 int listen_fd;
@@ -25,6 +25,11 @@ pid_t process_id = 0;
 pid_t sid = 0;
 
 float temp = 22.5; // Placeholder temperature reading
+
+float get_temp(void) {
+    // TODO Make this
+    return temp;
+}
 
 template <typename T> string tostr(const T& t) { 
    ostringstream os; 
@@ -54,12 +59,7 @@ void get_input(void) {
 	if (found!=std::string::npos) {
             to_syslog("GET TEMP was recieved");
             stringstr = "Temperature is " + tostr(get_temp()) + " degC.";
-            strcpy(str, stringstr.c_str());
+            strncpy(str, stringstr.c_str(), sizeof(str));
             write(comm_fd, str, sizeof(str)); //writes back to the client
 	}
-}
-
-float get_temp(void) {
-    // TODO Make this
-    return temp;
 }
