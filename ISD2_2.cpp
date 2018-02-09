@@ -31,20 +31,6 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	struct sockaddr_in servaddr;
-	listen_fd = socket(AF_INET, SOCK_STREAM, 0); // SOCK_STREAM = TCP socket
-	bzero(&servaddr, sizeof(servaddr)); //alternative to memset but only can set ZERO
-
-	/* Initialize socket structure */
-	servaddr.sin_family = AF_INET; //Ip V4
-	servaddr.sin_addr.s_addr = htons(INADDR_ANY); //accept any of the interfaces
-	servaddr.sin_port = htons(1955); //Port number
-
-	if (bind(listen_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) { // testing if the bind goes well
-		perror("ERROR on binding");
-		exit(1);
-	}
-
 	chdir("/"); // Change the current working directory to root.
 	// Close stdin. stdout and stderr, daemonizing the process
 	close(STDIN_FILENO);
@@ -57,10 +43,26 @@ int main(int argc, char* argv[]) {
 		exit(0);
 	}
         
+        struct sockaddr_in servaddr;
+	listen_fd = socket(AF_INET, SOCK_STREAM, 0); // SOCK_STREAM = TCP socket
+	bzero(&servaddr, sizeof(servaddr)); //alternative to memset but only can set ZERO
+
+	/* Initialize socket structure */
+	servaddr.sin_family = AF_INET; //Ip V4
+	servaddr.sin_addr.s_addr = htons(INADDR_ANY); //accept any of the interfaces
+	servaddr.sin_port = htons(1955); //Port number
+
+	if (bind(listen_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) { // testing if the bind goes well
+		perror("ERROR on binding");
+		exit(1);
+	}
+        
         listen(listen_fd, 10);
 	//listening to the specified ip and port and have a waiting list of 10
 	comm_fd = accept(listen_fd, (struct sockaddr*) NULL, NULL);
 
+        
+        
 	while (1) {
 		//Dont block context switches, let the process sleep for some time
 		sleep(1);

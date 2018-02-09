@@ -50,7 +50,6 @@ void get_input(void) {
 	bzero(str, 100); //sets str to ZERO
 	n = read(comm_fd, str, 100); //reads from the client to str and puts number of signs in to n
 	string stringstr = str;
-        //cout << "#" + stringstr + "#" << endl;
         std::size_t found = stringstr.find("GET TEMP");
 	if (found!=std::string::npos) {
             to_syslog("GET TEMP was recieved");
