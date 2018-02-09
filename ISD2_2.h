@@ -49,10 +49,11 @@ void sig_handler(int signo) {
 void get_input(void) {
 	bzero(str, 100); //sets str to ZERO
 	n = read(comm_fd, str, 100); //reads from the client to str and puts number of signs in to n
-	// TODO : fix this section
 	string stringstr = str;
-        to_syslog(stringstr);
-	if (stringstr == "GET TEMP") {
+        //cout << "#" + stringstr + "#" << endl;
+        std::size_t found = stringstr.find("GET TEMP");
+	if (found!=std::string::npos) {
+            to_syslog("GET TEMP was recieved");
             stringstr = "Temperature is " + tostr(get_temp()) + " degC.";
             strcpy(str, stringstr.c_str());
             write(comm_fd, str, sizeof(str)); //writes back to the client
