@@ -1,3 +1,6 @@
+#ifndef ISD2_2_H
+#define ISD2_2_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,6 +15,10 @@
 #include <string>
 #include <sstream>
 #include <pthread.h>
+#include <stdlib.h>
+#include <fstream>
+
+#define AIN0 /sys/bus/iio/devices/iio:device0/in_voltage0_raw
 
 using namespace std;
 
@@ -23,18 +30,30 @@ int n = 0;
 FILE *fp = NULL;
 pid_t process_id = 0;
 pid_t sid = 0;
+float temp = 22.5; //Placeholder temperature reading
 
-float temp = 22.5; // Placeholder temperature reading
+void setup_ADC(void) {
+    system("echo BB-ADC > /sys/devices/platform/bone_capemgr/slots");
+}
+
+float convert_temp(int temp) {
+    return temp;
+} 
 
 float get_temp(void) {
-    // TODO Make this
-    return temp;
+    string line;
+    ifstream myfile ("example.txt");
+    if (myfile.is_open()) {
+        getline (myfile,line);
+    }
+    float degC = convert_temp(line);
+    return degC;
 }
 
 template <typename T> string tostr(const T& t) { 
    ostringstream os; 
    os<<t; 
-   return os.str(); 
+   return os.str();
 } 
 
 void to_syslog(string str) {
@@ -63,3 +82,5 @@ void get_input(void) {
             write(comm_fd, str, sizeof(str)); //writes back to the client
 	}
 }
+#endif	// ISD2_2_H
+
