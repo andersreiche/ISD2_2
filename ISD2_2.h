@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <syslog.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netdb.h>
 #include <iostream>
 #include <string>
@@ -18,7 +19,7 @@
 #include <stdlib.h>
 #include <fstream>
 
-#define AIN0 /sys/bus/iio/devices/iio:device0/in_voltage0_raw
+#define AIN0 "/sys/bus/iio/devices/iio:device0/in_voltage0_raw"
 
 using namespace std;
 
@@ -42,11 +43,11 @@ float convert_temp(int temp) {
 
 float get_temp(void) {
     string line;
-    ifstream myfile ("example.txt");
+    ifstream myfile (AIN0);
     if (myfile.is_open()) {
         getline (myfile,line);
     }
-    float degC = convert_temp(line);
+    float degC = convert_temp(stoi(line));
     return degC;
 }
 
@@ -70,6 +71,12 @@ void sig_handler(int signo) {
 	exit(0);
 }
 
+void timer_handler (int signo) {
+    if (signo == SIGALRM) {
+        to_syslog("Got timer interrupt");
+    }
+}
+
 void get_input(void) {
 	bzero(str, 100); //sets str to ZERO
 	n = read(comm_fd, str, 100); //reads from the client to str and puts number of signs in to n
@@ -77,7 +84,7 @@ void get_input(void) {
         std::size_t found = stringstr.find("GET TEMP");
 	if (found!=std::string::npos) {
             to_syslog("GET TEMP was recieved");
-            stringstr = "Temperature is " + tostr(get_temp()) + " degC.";
+            stringstr = "Temperature is " + tostr(temp) + " degC.";
             strncpy(str, stringstr.c_str(), sizeof(str));
             write(comm_fd, str, sizeof(str)); //writes back to the client
 	}
