@@ -32,8 +32,8 @@ int main(int argc, char* argv[]) {
             to_syslog("sid < 0, closing process");
 		exit(EXIT_FAILURE);
 	}
-
         
+        setup_ADC(); // echo the device tree overlay to the cape manager
         
         //////// Daemonizing ////////
 	chdir("/"); // Change the current working directory to root.
@@ -94,11 +94,10 @@ int main(int argc, char* argv[]) {
 	comm_fd = accept(listen_fd, (struct sockaddr*) NULL, NULL);
         
 	while (1) {
-		//Dont block context switches, let the process sleep for some time
 		sleep(1);
 		get_input();
 	}
 	fclose(fp);
+        to_syslog("main returned 0, closing process");
 	return (0);
-        to_syslog("Daemonized process ended");
 }

@@ -65,7 +65,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/isd2_2: ${OBJECTFILES}
 ${OBJECTDIR}/ISD2_2.o: ISD2_2.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ISD2_2.o ISD2_2.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ISD2_2.o ISD2_2.cpp
 
 # Subprojects
 .build-subprojects:

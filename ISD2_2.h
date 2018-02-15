@@ -31,14 +31,15 @@ int n = 0;
 FILE *fp = NULL;
 pid_t process_id = 0;
 pid_t sid = 0;
-float temp = 22.5; //Placeholder temperature reading
+float temp = 0; //Placeholder temperature reading
 
 void setup_ADC(void) {
     system("echo BB-ADC > /sys/devices/platform/bone_capemgr/slots");
 }
 
 float convert_temp(int temp) {
-    return temp;
+    float milivolts = (temp / 4096) * 1800;
+    return (milivolts-500) / 10;
 } 
 
 float get_temp(void) {
@@ -74,6 +75,7 @@ void sig_handler(int signo) {
 void timer_handler (int signo) {
     if (signo == SIGALRM) {
         to_syslog("Got timer interrupt");
+        temp = get_temp();
     }
 }
 
@@ -81,10 +83,11 @@ void get_input(void) {
 	bzero(str, 100); //sets str to ZERO
 	n = read(comm_fd, str, 100); //reads from the client to str and puts number of signs in to n
 	string stringstr = str;
+        to_syslog("#DEBUG#" + stringstr + "#DEBUG#");
         std::size_t found = stringstr.find("GET TEMP");
 	if (found!=std::string::npos) {
             to_syslog("GET TEMP was recieved");
-            stringstr = "Temperature is " + tostr(temp) + " degC.";
+            stringstr = "Temperature is " + tostr(temp) + " degC.\n";
             strncpy(str, stringstr.c_str(), sizeof(str));
             write(comm_fd, str, sizeof(str)); //writes back to the client
 	}
